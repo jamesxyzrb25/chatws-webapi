@@ -1,7 +1,5 @@
 import { Prop,Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Message } from "./message.entity";
 import {ObjectId} from 'bson';
-import {  Types } from "mongoose";
 import { Room } from "./room.entity";
 
 @Schema()
@@ -14,14 +12,16 @@ export class User {
   @Prop({required: true})
   clientId: string;
 
-  //@Prop({type: [{type: Types.ObjectId, ref: 'Message'}]})
-  //messages?: Message[];
-
-  //@Prop({type: [{type: Types.ObjectId, ref: 'Room'}]})
-  //joinedRooms?: Room[];
-  
   @Prop({required: true})
   online: boolean;
+
+  @Prop()
+  notifications?: RoomNotification[];
+}
+
+interface RoomNotification{
+  roomId: Room | string;
+  pendingMessages: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

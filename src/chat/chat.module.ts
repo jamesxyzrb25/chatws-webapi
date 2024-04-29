@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ChatService } from './chat.service';
 import { ChatGateway } from './chat.gateway';
 import { AuthService } from 'src/auth/auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -10,6 +9,7 @@ import { MessagesController } from './controllers/message.controller';
 import { RoomsController } from './controllers/room.controller';
 import { MessageService } from './services/message.service';
 import { RoomService } from './services/room.service';
+import { UserService } from './services/user.service';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { RoomService } from './services/room.service';
       {name: User.name, schema: UserSchema}
     ])
   ],
-  providers: [ChatGateway, ChatService, AuthService, MessageService, RoomService],
+  providers: [ChatGateway, AuthService, MessageService, RoomService, UserService],
   controllers: [RoomsController,MessagesController],
 })
 export class ChatModule { }

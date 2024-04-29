@@ -1,0 +1,1 @@
+export type expectedFileTypes = 'image' | 'audio' | null;

@@ -30,6 +30,11 @@ input.addEventListener('keyup', (event) => {
   }
 });
 
+fileInput.addEventListener('change',()=>{
+  const fileName = fileInput.files[0].name;
+  console.log('Archivo seleccionado:', fileName);
+})
+
 async function listarSalas() {
   console.log('Entra a listar salas');
   try {
@@ -146,11 +151,11 @@ const getDateMessage = (date) => {
 const renderMessage = (payload) => {
   console.log('Entra a renderMessage');
   //const { userId, message, roomId, name } = payload;
-  const { text, created, owner, room } = payload;
+  const { content, createdAt, owner, room } = payload;
 
-  const time = getTimeMessage(created);
+  const time = getTimeMessage(createdAt);
 
-  console.log({ text, owner, room });
+  console.log({ content, owner, room });
   if (currentRoomId === room) {
     console.log('LLegando mensaje para listar en la caja');
 
@@ -162,7 +167,7 @@ const renderMessage = (payload) => {
 
     divElement.innerHTML = `
     <small style="color:#4CAF50"><b>${owner.nickname}</b></small>
-        <p>${text}</p>
+        <p>${content}</p>
         <p>${time}</p>
     `;
     chatElement.appendChild(divElement);
@@ -176,7 +181,7 @@ const getMessages = (messages) => {
   chatElement.innerHTML = '';
 
   //console.log(`messages es: ${JSON.stringify(messages)}`);
-  messages.forEach(({ text, created, owner, room }) => {
+  messages.forEach(({ content, createdAt, owner, room }) => {
     const divElement = document.createElement('div');
     console.log(divElement.innerHTML);
     //divElement.classList.add('speech-wrapper');
@@ -184,10 +189,10 @@ const getMessages = (messages) => {
     if (username == owner.nickname) {
       divElement.classList.add('own-message');
     }
-    const time = getTimeMessage(created);
+    const time = getTimeMessage(createdAt);
     divElement.innerHTML = `
         <small style="color:#4CAF50"><b>${owner.nickname}</b></small>
-        <p>${text}</p>
+        <p>${content}</p>
         <span class="timestamp">${time}</span>
     `;
 
@@ -209,18 +214,61 @@ const getMessages = (messages) => {
   console.log('Termina getMessages');
 };
 
+const uploadFileApi = ()=>{
+  const myHeaders = new Headers();
+myHeaders.append("accept", "text/plain");
+
+const formdata = new FormData();
+formdata.append("archivo", fileInput.files[0], fileInput.files[0].name);
+console.log("File desde uploadFile: ",fileInput.files[0]);
+console.log("FileName desde uploadFile:",fileInput.files[0].name);
+
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: formdata,
+  redirect: "follow"
+};
+const url =`https://miniowebapi-dev.abexa.pe/api/Archivo/subirArchivo?NombreCarpeta=chat-files&NombreArchivo=${fileInput.files[0].name}`
+console.log("Url es: ",url);
+fetch(url, requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));
+}
+
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  const message = input.value;
+  let file = null;
+  let fileType = null;
+  let fileName = null;
+  const message = input.value.trim();
+  if(fileInput.files[0] != undefined && fileInput.files.length > 0){
+    file = fileInput.files[0];
+    fileType = file.type.split('/')[0];
+    fileName = file.name.split('.')[0];
+  }
   const roomId = currentRoomId;
   input.value = '';
-  console.log('Enviando mensaje');
-  //socket.emit('send-message', message);
   if (currentRoomId) {
-    socket.emit('send-message', { room: roomId, text: message });
+    if(file != null){
+      console.log("File: ",file);
+      console.log("Tipo de archivo: ",file.type.split('/')[0]);
+      const mediaFile = {
+        mime: file.type,
+        original_name: fileName,
+        type: fileType,
+        size: file.size
+      }
+      uploadFileApi();
+      socket.emit('send-message',{ room: roomId, content: message, messageType: fileType, media: mediaFile})
+    }else{
+      socket.emit('send-message', { room: roomId, content: message, messageType:'text' });
+    }
+    fileInput.value = '';
   }
 });
-
+// -----------------SOCKET-------------------------
 const socket = io({
   auth: {
     token: 'ABC-123',
