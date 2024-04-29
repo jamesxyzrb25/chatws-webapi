@@ -1,0 +1,38 @@
+//@Library('JenkinsSharedLibrary')
+@Library(['JenkinsSharedLibraryOfficial'])
+
+import org.jenkinsci.plugins.workflow.steps.*
+
+def getGitBranchName() {
+    return scm.branches[0].name
+}
+
+node('ubuntu-dev'){
+    
+    stage('Clone Project') {
+        deleteDir()
+        checkout scm
+        sh 'ls -l'
+        def repoUrl = sh(returnStdout: true, script: 'git config --get remote.origin.url').trim()
+        def branchName = getGitBranchName()
+        echo "Rama : ${branchName}"
+        echo "Repo URL : ${repoUrl}"
+    }
+
+    stage('Check and Read Files') {
+        // obtener la ruta actual
+        def jenkinsProperties = deployUtils.readAndCheckConfigurationFiles("/devops/deploy-dev.yaml")
+        echo "jenkinsProperties : $jenkinsProperties"
+    }
+
+    stage('Delivery') {
+        // compilar el proyecto
+        deployUtils.deployToArtifactory("/devops/deploy-dev.yaml")
+    }
+    
+    stage('Deploy') {
+        // compilar el proyecto
+        deployUtils.generateAndDeployWithKubernetes("/devops/deploy-dev.yaml")
+    }
+    
+}

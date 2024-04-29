@@ -1,0 +1,48 @@
+storage:  # no mandatorio, aunque si se colocan estos paths, se crearàn automàticamente los directorios del PV correspondiente...
+  volume_size: 1Gi
+  mount_path:
+    - "/data/"
+    - "/public/upload/"  # directorio de almacenamiento de bases de datos
+service:
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30016
+enviroment_variables:
+  - name: NODE_ENV
+    value: 'dev'
+  - name: URL_USERS_API
+    value: 'http://ldapwebapi.abexa.pe/context/api/ldap'
+  - name: URL_MONGODB
+    value: 'mongodb://abexa:Abexa123%40123@192.168.1.17:30004/chatapp?authMechanism=SCRAM-SHA-1&authSource=admin'
+  - name: URL_MINIOWEBAPI
+    value: 'https://miniowebapi-dev.abexa.pe'
+resources_plan:
+  max_memory_usage: 1G
+  min_memory_usage: 1G
+  min_cpu_usage: 0.5G
+  max_cpu_usage: 1G
+project:
+  configuration_tool:
+    build: npm
+    path: package.json # mandatorio para obtener la versión de la aplicación
+  project_info:
+    type: web
+    language: javascript
+    framework: nodejs
+    app_version: none
+    app_name: chatws-webapi # solo caracteres alfanumèricos y '-' o '.'
+  repository_info:
+    registry_hostname: 'https://registrydev-service.abexa.pe' # nexus.abexa.local:9876/snapshots
+    repository_server_type: private
+    environment_type: dev
+    registry_image: registrydev-service.abexa.pe/chatws-webapi # automàticamente se completarà la versiòn 'registry:<version_project>' al leer del project.configuration_tool.path (pom.xml)
+    registry_credentials_id: abexa-registry-docker-secret # no mandatorio, solo en caso de querer extraer de un registry privado
+    imagePullPolicy: Always # IfNotPresent, Always ... indicarà si realizar el pull de la imàgen màs de una vez..
+    destroyIfExists: true # destruye los servicios, deployment, pv, pvc
+replicas:
+  min: 1
+  max: 1
+
+# docker pull training_web_service_for_jenkins:1.0
