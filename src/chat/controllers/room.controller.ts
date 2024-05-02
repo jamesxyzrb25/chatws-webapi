@@ -13,6 +13,11 @@ export class RoomsController {
     return this.roomService.findQ(q);
   }
 
+  @Get('/user/:uid')
+  getRoomsByUser(@Param('uid') uid:string){
+    return this.roomService.getRoomsByUser(uid);
+  }
+
   @Get('/:id')
   findById(@Param('id') id: string) { 
     return this.roomService.findRoomById(id);

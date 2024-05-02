@@ -12,6 +12,14 @@ export class Room {
   @Prop({required: true, maxlength: 20, minlength: 5})
   name: string;
 
+  @ApiProperty()
+  @Prop()
+  descriptionRoom:string;
+
+  @ApiProperty()
+  @Prop()
+  urlImageRoom:string;
+
   @ApiProperty({ required: true })
   @Prop({type: [{type: Types.ObjectId, ref: 'Message'}]})
   messages: Message[];
