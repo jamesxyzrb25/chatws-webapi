@@ -17,7 +17,7 @@ import { UserService } from './services/user.service';
       {name: Room.name,schema: RoomSchema},
       {name: Message.name, schema: MessageSchema},
       {name: User.name, schema: UserSchema}
-    ])
+    ]),
   ],
   providers: [ChatGateway, AuthService, MessageService, RoomService, UserService],
   controllers: [RoomsController,MessagesController],

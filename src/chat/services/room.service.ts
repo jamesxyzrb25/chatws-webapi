@@ -1,11 +1,16 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Room } from "../entities/room.entity";
+import { Any, Connection, Repository } from "typeorm";
+import { TENANT_CONNECTION } from "src/main";
 
 @Injectable()
 export class RoomService {
-    constructor(@InjectModel(Room.name) private readonly model: Model<Room>) { }
+    constructor(
+        @InjectModel(Room.name) private readonly model: Model<Room>
+    ) { 
+    }
 
     async saveRoom(item: Room) {
         try {
@@ -42,5 +47,9 @@ export class RoomService {
         } catch (error) {
             console.log("Error al consultar modelos");
         }
+    }
+
+    async getRooms(){
+
     }
 }

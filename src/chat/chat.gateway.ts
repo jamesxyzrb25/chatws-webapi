@@ -50,6 +50,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         } else {
             user.clientId = socket.id;
             user.online = true;
+            user.lastseen = null;
             user = await this.userService.saveUser(user);
         }
 
@@ -63,6 +64,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.server.emit('users-changed', { user: user.nickname, event: 'left' });
             user.clientId = null;
             user.online = false;
+            user.lastseen = new Date();
             console.log("Usuario desconectado: ", user);
             await this.usersModel.findByIdAndUpdate(user._id, user);
         }
@@ -119,7 +121,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const userResponse = await this.usersModel.findOne({ clientId: client.id });
         if(message.media){
             message.media.path =`${process.env.URL_MINIOWEBAPI}/api/Archivo/verImagen?NombreCarpeta=chat-files&NombreImagen=${message.media.original_name}`;
-
         }
        
         message.owner = userResponse;

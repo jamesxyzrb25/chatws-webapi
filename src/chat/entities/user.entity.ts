@@ -16,6 +16,9 @@ export class User {
   online: boolean;
 
   @Prop()
+  lastseen?: Date;
+
+  @Prop()
   notifications?: RoomNotification[];
 }
 

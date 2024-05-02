@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+export const TENANT_CONNECTION = 'TENANT_CONNECTION';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -10,7 +12,7 @@ async function bootstrap() {
   }else{
     console.log(`Mi env es ${process.env.NODE_ENV.trim()}`);
   }
-
+  
   const config = new DocumentBuilder()
     .setTitle('Chat Scoket Api')
     .setDescription('The chat socket api')
