@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { Room } from "../entities/room.entity";
 import { RoomService } from "../services/room.service";
+import { OperationResult } from "src/interfaces/operation-result";
+import { ApiResponse } from "@nestjs/swagger";
 
 @Controller('api/rooms')
 export class RoomsController {
@@ -14,7 +16,12 @@ export class RoomsController {
   }
 
   @Get('/user/:uid')
-  getRoomsByUser(@Param('uid') uid:string){
+  @ApiResponse({
+    status: 200,
+    type: OperationResult<any>
+  })
+
+  getRoomsByUser(@Param('uid') uid:string): Promise<OperationResult<any>> {
     return this.roomService.getRoomsByUser(uid);
   }
 
