@@ -18,6 +18,17 @@ enviroment_variables:
     value: 'mongodb://abexa:Abexa123%40123@192.168.1.17:30004/chatapp?authMechanism=SCRAM-SHA-1&authSource=admin'
   - name: URL_MINIOWEBAPI
     value: 'https://miniowebapi-dev.abexa.pe'
+  - name: DB_HOST
+    value: 'serverdevops.abexa.pe'
+  - name: DB_USERNAME
+    value: 'yorklin'
+  - name: DB_PASS
+    value: '123'
+  - name: DB_PORT
+    value: '1002'
+  - name: DB_NAME
+    value: 'BDGpsGeneral'
+  
 resources_plan:
   max_memory_usage: 1G
   min_memory_usage: 1G

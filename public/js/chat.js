@@ -38,7 +38,7 @@ fileInput.addEventListener('change',()=>{
 async function listarSalas() {
   console.log('Entra a listar salas');
   try {
-    const response = await fetch('http://localhost:3000/api/rooms', {
+    const response = await fetch('https://chatws-dev.abexa.pe/api/rooms', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
