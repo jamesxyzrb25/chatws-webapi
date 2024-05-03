@@ -11,4 +11,5 @@ export class MessagesController {
     find(@Query('where') where) {
         return this.messagService.find(where);
     }
+
 }

@@ -9,7 +9,7 @@ export class Room {
   _id: ObjectId | string;
 
   @ApiProperty({ required: true })
-  @Prop({required: true, maxlength: 20, minlength: 5})
+  @Prop({required: true, maxlength: 20, minlength: 5, unique:true})
   name: string;
 
   @ApiProperty()

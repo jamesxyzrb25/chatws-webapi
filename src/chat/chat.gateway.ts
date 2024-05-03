@@ -107,7 +107,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
 
         await this.userService.saveUser(user);
-        client.emit('room-messages', response);
+        client.emit('room-messages', data.roomId);
         client.join(data.roomId);
     }
 

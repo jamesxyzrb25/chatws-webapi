@@ -6,12 +6,14 @@ import { Any, Connection, Repository } from "typeorm";
 import { TENANT_CONNECTION } from "src/main";
 import { User } from "../entities/user.entity";
 import { OperationResult } from "src/interfaces/operation-result";
+import { Message } from "../entities/message.entity";
 
 @Injectable()
 export class RoomService {
     constructor(
         @InjectModel(Room.name) private readonly roomModel: Model<Room>,
         @InjectModel(User.name) private readonly userModel: Model<User>,
+        @InjectModel(Message.name) private readonly messageModel: Model<Message>
     ) {
     }
 
@@ -91,5 +93,18 @@ export class RoomService {
             return responseApi;
         }
 
+    }
+
+    async getMessagesByRoom(room: string):Promise<OperationResult<any>> {
+        const responseApi: OperationResult<any> = { isValid: false, exceptions: [], content: null };
+        try{
+            const responseMessages = await this.messageModel.find({ room: room }).populate('owner','nickname').exec();
+            responseApi.isValid= true;
+            responseApi.content = responseMessages;
+            return responseApi;
+        }catch(error){
+            responseApi.exceptions.push({code:"E01",description:"Algo ocurrio. Vuelva a intentarlo."});
+            return responseApi;
+        }
     }
 }

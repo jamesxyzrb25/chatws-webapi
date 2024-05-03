@@ -15,7 +15,7 @@ export class RoomsController {
     return this.roomService.findQ(q);
   }
 
-  @Get('/user/:uid')
+  @Get('/:uid/user')
   @ApiResponse({
     status: 200,
     type: OperationResult<any>
@@ -28,6 +28,11 @@ export class RoomsController {
   @Get('/:id')
   findById(@Param('id') id: string) { 
     return this.roomService.findRoomById(id);
+  }
+
+  @Get('/:roomName/messages')
+  getMessagesByRoom(@Param('roomName') roomName:string):Promise<OperationResult<any>>{
+    return this.roomService.getMessagesByRoom(roomName);
   }
 
   @Post()

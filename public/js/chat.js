@@ -55,6 +55,24 @@ async function listarSalas() {
   }
 }
 
+const getMessagesByRoom = async(roomName)=>{
+  try {
+
+    const response = await fetch(`http://localhost:3000/api/rooms/${roomName}/messages`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        // Puedes incluir otros headers si es necesario, como tokens de autorización
+      },
+    });
+    const data = await response.json();
+    console.log('data messages es: ', data);
+    getMessages(data);
+  } catch (error) {
+    console.error('Error al listar salas:', error);
+  }
+}
+
 function mostrarResultado(salas) {
   const resultadoDiv = document.getElementById('divRooms');
   resultadoDiv.innerHTML = '<h2>Salas Disponibles</h2>';
@@ -177,11 +195,12 @@ const renderMessage = (payload) => {
 };
 
 const getMessages = (messages) => {
-  console.log('Entra a getMessages');
+  console.log('Entra a getMessages (Listado general de mensajes por sala');
   chatElement.innerHTML = '';
 
-  //console.log(`messages es: ${JSON.stringify(messages)}`);
-  messages.forEach(({ content, createdAt, owner, room }) => {
+  console.log(`messages es: ${JSON.stringify(messages)}`);
+  console.log(`messages: `,messages.content);
+  messages.content.forEach(({ content, createdAt, owner, room }) => {
     const divElement = document.createElement('div');
     console.log(divElement.innerHTML);
     //divElement.classList.add('speech-wrapper');
@@ -280,7 +299,8 @@ socket.on('connect', () => {
   console.log('Conectado al socket');
 });
 socket.on('message-received', renderMessage);
-socket.on('room-messages', getMessages);
+socket.on('room-messages', getMessagesByRoom);
+
 
 socket.on('users-changed', (data) => {
   console.log('Data users-changed client');
