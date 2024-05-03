@@ -16,6 +16,10 @@ export class Room {
   @Prop()
   descriptionRoom:string;
 
+  @ApiProperty({ required: true })
+  @Prop()
+  codSql: string;
+
   //@ApiProperty()
   @Prop()
   createdAt?: Date;

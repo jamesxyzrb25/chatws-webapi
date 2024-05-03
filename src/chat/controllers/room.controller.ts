@@ -36,7 +36,7 @@ export class RoomsController {
   }
 
   @Post()
-  save(@Body() item: Room) { 
+  save(@Body() item: Room) {
     /* console.log("Entra a a post de room");
     console.log("Item es: ",item);
     return item._id
