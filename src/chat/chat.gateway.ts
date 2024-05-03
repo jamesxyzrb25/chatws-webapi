@@ -1,6 +1,6 @@
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from 'socket.io';
 import { User } from "./entities/user.entity";
 import { Message } from "./entities/message.entity";
@@ -9,8 +9,6 @@ import { MessageService } from "./services/message.service";
 import { RoomService } from "./services/room.service";
 import { AuthService } from "src/auth/auth.service";
 import { UserService } from "./services/user.service";
-
-
 
 @WebSocketGateway({ cors: '*:*' })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -42,11 +40,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             socket.disconnect();
             return;
         }
-        //const user = await this.usersModel.findOne({ clientId: socket.id });
-        //let user = await this.usersModel.findOne({ nickname: name });
+
         let user = await this.userService.findOne({ nickname: name });
         if (!user) {
-            user = await this.userService.saveUser({ nickname: name, clientId: socket.id, online: true });
+            let notifications = [];
+            const rooms = await this.roomsModel.find();
+            for(const room of rooms){
+                notifications.push({
+                    roomId: room.id,
+                    pendingMessages:0
+                })
+            }
+            user = await this.userService.saveUser({
+                nickname: name,
+                clientId: socket.id,
+                createdAt: new Date(),
+                online: true,
+                notifications: notifications
+            });
         } else {
             user.clientId = socket.id;
             user.online = true;
@@ -75,7 +86,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log({ data })
         let user = await this.usersModel.findOne({ nickname: data.nickname });
         if (!user) {
-            user = await this.usersModel.create({ nickname: data.nickname, clientId: client.id });
+            console.log("No se encontró el usuario. No podra unirse a una sala");
+            client.disconnect();
+            return;
+            //user = await this.usersModel.create({ nickname: data.nickname, clientId: client.id });
         } else {
             user.clientId = client.id;
             user = await this.usersModel.findByIdAndUpdate(user._id, user, { new: true });
@@ -90,8 +104,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const existRoomNot = user.notifications.find((userNotif) => userNotif.roomId == responseRoom.id);
         if (existRoomNot) {
             existRoomNot.pendingMessages = 0;
-            user.notifications = [existRoomNot];
         }
+
         await this.userService.saveUser(user);
         client.emit('room-messages', response);
         client.join(data.roomId);
@@ -119,10 +133,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log("Entra a send-message de gateway");
         console.log({ message })
         const userResponse = await this.usersModel.findOne({ clientId: client.id });
-        if(message.media){
-            message.media.path =`${process.env.URL_MINIOWEBAPI}/api/Archivo/verImagen?NombreCarpeta=chat-files&NombreImagen=${message.media.original_name}`;
+        if (message.media) {
+            message.media.path = `${process.env.URL_MINIOWEBAPI}/api/Archivo/verImagen?NombreCarpeta=chat-files&NombreImagen=${message.media.original_name}`;
         }
-       
+
         message.owner = userResponse;
         message.createdAt = new Date();
 

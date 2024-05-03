@@ -16,6 +16,10 @@ export class Room {
   @Prop()
   descriptionRoom:string;
 
+  //@ApiProperty()
+  @Prop()
+  createdAt?: Date;
+
   @ApiProperty()
   @Prop()
   urlImageRoom:string;

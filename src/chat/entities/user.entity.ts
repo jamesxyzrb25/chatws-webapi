@@ -9,6 +9,9 @@ export class User {
   @Prop({required: true, maxlength: 20, minlength: 5})
   nickname: string;
 
+  @Prop()
+  createdAt?: Date;
+
   @Prop({required: true})
   clientId: string;
 

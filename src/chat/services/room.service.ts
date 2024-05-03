@@ -18,10 +18,17 @@ export class RoomService {
     async saveRoom(item: Room) {
         try {
             console.log("Entra a a post de room");
+            if(item._id){
+                return this.roomModel.findByIdAndUpdate(item._id, item, { new: true })
+            }else{
+                item.createdAt = new Date();
+                return this.roomModel.create(item);
+            }
+            /* console.log("Entra a a post de room");
             console.log("Item es: ", item);
             return item._id
                 ? this.roomModel.findByIdAndUpdate(item._id, item, { new: true })
-                : this.roomModel.create(item);
+                : this.roomModel.create(item); */
         } catch (error) {
             console.log("Error al consultar modelos");
         }
@@ -61,16 +68,12 @@ export class RoomService {
             if (!user) {
                 throw new Error('Usuario no encontrado');
             }
-
-            const pendingMessages = [];
-
+            const responseRooms = [];
             for (const notification of user.notifications) {
-
                 const room = await this.roomModel.findById(notification.roomId).exec();
-
                 if (room) {
                     // Agregar los mensajes pendientes de la sala a la lista
-                    pendingMessages.push({
+                    responseRooms.push({
                         _id: room.id,
                         nameRoom: room.name,
                         descriptionRoom: room.descriptionRoom,
@@ -81,7 +84,7 @@ export class RoomService {
                 }
             }
             responseApi.isValid = true;
-            responseApi.content = pendingMessages;
+            responseApi.content = responseRooms;
             return responseApi;
         } catch (error) {
             responseApi.exceptions.push({code:"E01",description:"Algo ocurrio. Vuelva a intentarlo."});
