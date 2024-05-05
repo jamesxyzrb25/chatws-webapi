@@ -20,9 +20,9 @@ export class RoomService {
     async saveRoom(item: Room) {
         try {
             console.log("Entra a a post de room");
-            if(item._id){
+            if (item._id) {
                 return this.roomModel.findByIdAndUpdate(item._id, item, { new: true })
-            }else{
+            } else {
                 item.createdAt = new Date();
                 return this.roomModel.create(item);
             }
@@ -71,39 +71,40 @@ export class RoomService {
                 throw new Error('Usuario no encontrado');
             }
             const responseRooms = [];
-            for (const notification of user.notifications) {
-                const room = await this.roomModel.findById(notification.roomId).exec();
-                if (room) {
-                    // Agregar los mensajes pendientes de la sala a la lista
-                    responseRooms.push({
-                        _id: room.id,
-                        nameRoom: room.name,
-                        descriptionRoom: room.descriptionRoom,
-                        pendingMessages: notification.pendingMessages,
-                        urlImageRoom: room.urlImageRoom
-                        //urlImageRoom: "https://miniowebapi-dev.abexa.pe/api/Archivo/verImagen?NombreCarpeta=chat-files&NombreImagen=group_default_logo.png"
-                    });
+            const rooms = await this.roomModel.find().exec();
+            for (const room of rooms) {
+                let userNotification = user.notifications.find(not => not.roomId===room.id);
+                if(!userNotification){
+                    userNotification = {roomId:room.id, pendingMessages:0}
                 }
+                responseRooms.push({
+                    _id: room.id,
+                    nameRoom: room.name,
+                    descriptionRoom: room.descriptionRoom,
+                    pendingMessages: userNotification,
+                    urlImageRoom: room.urlImageRoom
+                })
             }
+            
             responseApi.isValid = true;
             responseApi.content = responseRooms;
             return responseApi;
         } catch (error) {
-            responseApi.exceptions.push({code:"E01",description:"Algo ocurrio. Vuelva a intentarlo."});
+            responseApi.exceptions.push({ code: "E01", description: "Algo ocurrio. Vuelva a intentarlo." });
             return responseApi;
         }
 
     }
 
-    async getMessagesByRoom(room: string):Promise<OperationResult<any>> {
+    async getMessagesByRoom(room: string): Promise<OperationResult<any>> {
         const responseApi: OperationResult<any> = { isValid: false, exceptions: [], content: null };
-        try{
-            const responseMessages = await this.messageModel.find({ room: room }).populate('owner','nickname').exec();
-            responseApi.isValid= true;
+        try {
+            const responseMessages = await this.messageModel.find({ room: room }).populate('owner', 'nickname').exec();
+            responseApi.isValid = true;
             responseApi.content = responseMessages;
             return responseApi;
-        }catch(error){
-            responseApi.exceptions.push({code:"E01",description:"Algo ocurrio. Vuelva a intentarlo."});
+        } catch (error) {
+            responseApi.exceptions.push({ code: "E01", description: "Algo ocurrio. Vuelva a intentarlo." });
             return responseApi;
         }
     }

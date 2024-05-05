@@ -37,8 +37,9 @@ fileInput.addEventListener('change',()=>{
 
 async function listarSalas() {
   console.log('Entra a listar salas');
+  uid="jrafael"
   try {
-    const response = await fetch('https://chatws-dev.abexa.pe/api/rooms', {
+    const response = await fetch(`http://localhost:3000/api/rooms/${uid}/user`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +49,7 @@ async function listarSalas() {
     const data = await response.json();
     //addEventToRooms(data);
     //console.log("rooms es: ",rooms);
-    console.log('data es: ', data);
+    console.log('data-salas es: ', data);
     mostrarResultado(data);
   } catch (error) {
     console.error('Error al listar salas:', error);
@@ -58,7 +59,7 @@ async function listarSalas() {
 const getMessagesByRoom = async(roomName)=>{
   try {
 
-    const response = await fetch(`http://localhost:3000/api/rooms/${roomName}/messages`, {
+    const response = await fetch(`https://chatws-dev.abexa.pe/api/rooms/${roomName}/messages`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -78,10 +79,10 @@ function mostrarResultado(salas) {
   resultadoDiv.innerHTML = '<h2>Salas Disponibles</h2>';
   const listaUl = document.createElement('ul');
   listaUl.classList.add('list-group');
-  salas.forEach((sala) => {
+  salas.content.forEach((sala) => {
     const li = document.createElement('li');
     li.classList.add('list-group-item');
-    li.textContent = sala.name;
+    li.textContent = sala.nameRoom;
     listaUl.appendChild(li);
     addEventToRoom(li, sala);
   });

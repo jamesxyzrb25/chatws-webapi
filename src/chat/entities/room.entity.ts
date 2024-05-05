@@ -28,9 +28,9 @@ export class Room {
   @Prop()
   urlImageRoom:string;
 
-  @ApiProperty({ required: true })
+  /* @ApiProperty({ required: true })
   @Prop({type: [{type: Types.ObjectId, ref: 'Message'}]})
-  messages: Message[];
+  messages: Message[]; */
 
   @ApiProperty({ required: true })
   @Prop({type: [{type: Types.ObjectId, ref: 'User'}]})

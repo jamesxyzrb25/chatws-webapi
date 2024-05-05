@@ -76,7 +76,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             user.clientId = null;
             user.online = false;
             user.lastseen = new Date();
-            console.log("Usuario desconectado: ", user);
+            console.log("Usuario desconectado: ", user.nickname);
             await this.usersModel.findByIdAndUpdate(user._id, user);
         }
     }
