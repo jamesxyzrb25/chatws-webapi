@@ -81,7 +81,7 @@ export class RoomService {
                     _id: room.id,
                     nameRoom: room.name,
                     descriptionRoom: room.descriptionRoom,
-                    pendingMessages: userNotification,
+                    pendingMessages: userNotification.pendingMessages,
                     urlImageRoom: room.urlImageRoom
                 })
             }
